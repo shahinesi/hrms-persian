@@ -943,17 +943,14 @@ class SalarySlip(TransactionBase):
 				equivalent_lwp = 1 - daily_wages_fraction_for_half_day
 
 				if leave_type_map[d.leave_type]["is_ppl"]:
-					equivalent_lwp *= (
-						fraction_of_daily_salary_per_leave if fraction_of_daily_salary_per_leave else 1
-					)
+					# fraction is the paid share of the day, so the rest is leave without pay
+					equivalent_lwp *= 1 - flt(fraction_of_daily_salary_per_leave)
 				lwp += equivalent_lwp
 
 			elif d.status == "On Leave" and d.leave_type and d.leave_type in leave_type_map.keys():
 				equivalent_lwp = 1
 				if leave_type_map[d.leave_type]["is_ppl"]:
-					equivalent_lwp *= (
-						fraction_of_daily_salary_per_leave if fraction_of_daily_salary_per_leave else 1
-					)
+					equivalent_lwp *= 1 - flt(fraction_of_daily_salary_per_leave)
 				lwp += equivalent_lwp * day_fraction
 
 			elif d.status == "Absent":
@@ -1023,6 +1020,8 @@ class SalarySlip(TransactionBase):
 		if self.salary_structure:
 			self.calculate_component_amounts("employer_contributions")
 
+		self.apply_regional_employer_contributions()
+
 		self.set_precision_for_component_amounts()
 		self.set_net_pay()
 		if not skip_tax_breakup_computation:
@@ -1031,6 +1030,11 @@ class SalarySlip(TransactionBase):
 	@hrms.allow_regional
 	def apply_regional_deductions(self):
 		"Hook point for region-specific salary slip deductions."
+		pass
+
+	@hrms.allow_regional
+	def apply_regional_employer_contributions(self):
+		"Hook point for region-specific employer contributions, after the structure rows are added."
 		pass
 
 	def set_net_pay(self):
