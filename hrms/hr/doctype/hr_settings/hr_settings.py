@@ -35,9 +35,7 @@ class HRSettings(Document):
 		hiring_sender: DF.Link | None
 		hiring_sender_email: DF.Data | None
 		interview_reminder_template: DF.Link | None
-		leave_approval_notification_template: DF.Link | None
 		leave_approver_mandatory_in_leave_application: DF.Check
-		leave_status_notification_template: DF.Link | None
 		prevent_self_expense_approval: DF.Check
 		prevent_self_leave_approval: DF.Check
 		remind_before: DF.Time | None
@@ -48,7 +46,6 @@ class HRSettings(Document):
 		send_holiday_reminders: DF.Check
 		send_interview_feedback_reminder: DF.Check
 		send_interview_reminder: DF.Check
-		send_leave_notification: DF.Check
 		send_work_anniversary_reminders: DF.Check
 		sender: DF.Link | None
 		sender_email: DF.Data | None
@@ -124,9 +121,9 @@ class HRSettings(Document):
 
 		frappe.msgprint(
 			msg=frappe._(
-				"Employees will miss holiday reminders from {} until {}. <br> Do you want to proceed with this change?"
+				"Employees will miss holiday reminders from {0} until {1}. <br> Do you want to proceed with this change?"
 			).format(from_date, to_date),
-			title="Confirm change in Frequency",
+			title=frappe._("Confirm change in Frequency"),
 			primary_action={
 				"label": frappe._("Yes, Proceed"),
 				"client_action": "hrms.proceed_save_with_reminders_frequency_change",
